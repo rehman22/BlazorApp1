@@ -1,0 +1,129 @@
+﻿@* @attribute [Authorize] *@
+@page "/counter"
+@using BlazorApp1.Component
+@using BlazorApp1.Services
+@inject CustomerService CustomerService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+<style>
+    .registration-form {
+        max-width: 400px;
+        margin: auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #45a049;
+        }
+</style>
+
+<h3>Register Customer</h3>
+
+<div class="registration-form">
+    <form>
+        <div class="form-group">
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" @bind="CustomerName" />
+        </div>
+
+        <div class="form-group">
+            <CnicNameEntry />
+             
+        </div>
+
+        <div class="form-group">
+            <label for="fatherName">Father Name:</label>
+            <input type="text" id="fatherName" @bind="FatherName" />
+        </div>
+
+        <div class="form-group">
+            <label for="cellNo">Cell No:</label>
+            <input type="text" id="cellNo" @bind="CellNo" />
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address" @bind="Address" />
+        </div>
+
+        <div class="form-group">
+            <label for="accountNo">Account No:</label>
+            <input type="text" id="accountNo" @bind="AccountNo" />
+        </div>
+
+        <button type="button" @onclick="RegisterCustomer">Register</button>
+
+
+
+
+
+    </form>
+</div>
+
+@code {
+    private string CustomerName { get; set; }
+    private string CNIC { get; set; }
+    private string FatherName { get; set; }
+    private string CellNo { get; set; }
+    private string Address { get; set; }
+    private string AccountNo { get; set; }
+
+    private string errorMessage;
+
+    private void RegisterCustomer()
+    {
+        var customer = CustomerService.RegisterCustomer(CustomerName, CNIC, FatherName, CellNo, Address, AccountNo);
+
+        if (customer != null)
+        {
+            // Registration successful
+            // You can navigate to a confirmation page or perform other actions
+            // For simplicity, let's just display a success message
+            ShowSuccessMessage();
+        }
+        else
+        {
+            // Registration failed (duplicate CNIC)
+            // You can display an error message or handle it as needed
+            ShowErrorMessage();
+        }
+    }
+
+    private void ShowSuccessMessage()
+    {
+        NavigationManager.NavigateTo("/CustomerList");
+        // Implement logic to show a success message
+        Console.WriteLine("Customer registered successfully!");
+    }
+
+    private void ShowErrorMessage()
+    {
+        // Implement logic to show an error message
+        Console.WriteLine("Registration failed. CNIC is not unique.");
+    }
+}
+

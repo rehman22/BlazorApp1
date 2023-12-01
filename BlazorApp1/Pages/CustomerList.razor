@@ -1,0 +1,93 @@
+﻿<!-- CustomerList.razor -->
+@page "/CustomerList"
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+
+@inject LocalizationService LocalizationService
+@inject CustomerService CustomerService 
+@inject NavigationManager NavigationManager
+
+
+<h3>Customer List</h3> 
+
+<div class="form-group">
+    <label for="searchInput">@LocalizationService.GetLocalizedString("SearchLabel"):</label>
+    <input type="text" class="form-control" value="@searchTerm" @oninput="OnSearchTermChanged" />
+</div>
+
+@if (filteredCustomers != null && filteredCustomers.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@LocalizationService.GetLocalizedString("CustomerNameLabel"):</th>
+                <th>CNIC</th>
+                <th>Father Name</th>
+                <th>Cell No</th>
+                <th>Address</th>
+                <th>Account No</th>
+                <th>Actions</th> <!-- New column for buttons -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in filteredCustomers)
+            {
+                <tr>
+                    <td>@customer.CustomerName</td>
+                    <td>@customer.CNIC</td>
+                    <td>@customer.FatherName</td>
+                    <td>@customer.CellNo</td>
+                    <td>@customer.Address</td>
+                    <td>@customer.AccountNo</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditCustomer(customer)">@LocalizationService.GetLocalizedString("EditButtonLabel")</button>
+                        <button class="btn btn-danger" @onclick="() => ProcessCustomer(customer)">Process</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No customers found.</p>
+}
+
+@code {
+    private List<Customer> customers;
+    private List<Customer> filteredCustomers = new List<Customer>(); // Initialize to an empty list
+    private string searchTerm = "";
+
+    protected override void OnInitialized()
+    {
+        // Fetch the list of customers from the injected service
+        customers = CustomerService.GetCustomers();
+        FilterCustomers(); // Call FilterCustomers to initialize the filtered list
+    }
+
+    private void EditCustomer(Customer customer)
+    {
+        NavigationManager.NavigateTo($"/EditCustomer/{customer.CustomerId}");
+
+    }
+
+    private void ProcessCustomer(Customer customer)
+    {
+        // Implement logic for processing a customer
+        // You might perform some business process or navigate to another page, etc.
+        Console.WriteLine($"Processing customer: {customer.CustomerName}");
+    }
+
+    // Call FilterCustomers when the search term changes
+    private void OnSearchTermChanged(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString();
+        FilterCustomers();
+    }
+
+    // Filter customers based on the search term using CustomerFilterService
+    private void FilterCustomers()
+    {
+        filteredCustomers = CustomerService.FilterCustomers(customers, searchTerm);
+    }
+}

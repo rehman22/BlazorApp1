@@ -1,0 +1,33 @@
+﻿<!-- CnicNameEntry.razor -->
+<div>
+    <label>CNIC (National Identity Number): </label>
+    <input type="number" @bind="cnic" @oninput="HandleCnicInput" />
+</div>
+
+<div>
+    <label>Name: </label>
+    <input @bind="name" />
+</div>
+
+@code {
+    private string cnic = "";
+    private string name = "";
+
+    private void HandleCnicInput(ChangeEventArgs e)
+    {
+        string rawValue = e.Value?.ToString();
+
+        // Remove non-numeric characters
+        string numericValue = new string(rawValue?.Where(char.IsDigit).ToArray());
+
+        // Apply the CNIC masking format
+        if (numericValue.Length > 13)
+        {
+            // Truncate to 13 digits if the input is longer
+            numericValue = numericValue.Substring(0, 13);
+        }
+
+        // Update the bound property
+        cnic = numericValue;
+    }
+}
